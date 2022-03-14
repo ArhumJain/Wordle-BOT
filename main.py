@@ -16,24 +16,21 @@ def clear():
     else: os.system('clear')
 
 def bestGuess(answer, guess, infoDist):
-    for word in (guesses + solutions):
-        for i in range(0,len(answer)):
-            if 
+    pass
 def play():
     def getInfoDistribution(answer, guess):
         dist = [0] * len(answer)
         answerFreq = defaultdict(lambda: 0, { i : answer.count(i) for i in answer })
+        guessFreq = defaultdict(lambda: 0, { i : guess.count(i) for i in guess })
         for i in range(0, len(answer)):
             if guess[i] == answer[i]:
                 answerFreq[guess[i]] -= 1
+                guessFreq[guess[i]] -= 1
                 dist[i] = 2
         for i in range(0, len(answer)):
-            if answerFreq[guess[i]] != 0:
+            if answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0:
                 dist[i] = 1
                 answerFreq[guess[i]] -= 1
-            elif dist[i] != 2:
-                dist[i] = 0
-        return dist
     def displayGuess(answer, guess):
         infoDist = getInfoDistribution(answer, guess)
         for i in range(0, len(answer)):
@@ -46,7 +43,7 @@ def play():
         print("\n")
 
     
-    answer = solutions[random.randrange(len(solutions))]
+    answer = "slush"#solutions[random.randrange(len(solutions))]
     guessCount = 0
     madeGuesses = []
 
