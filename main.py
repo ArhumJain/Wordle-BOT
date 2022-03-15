@@ -15,35 +15,49 @@ def clear():
     if os.name == "nt": os.system('cls')
     else: os.system('clear')
 
-def bestGuess(answer, guess, infoDist):
+def getInfoDistribution(answer, guess):
+    dist = [0] * len(answer)
+    answerFreq = defaultdict(lambda: 0, { i : answer.count(i) for i in answer })
+    guessFreq = defaultdict(lambda: 0, { i : guess.count(i) for i in guess })
+    for i in range(0, len(answer)):
+        if guess[i] == answer[i]:
+            answerFreq[guess[i]] -= 1
+            guessFreq[guess[i]] -= 1
+            dist[i] = 2
+    for i in range(0, len(answer)):
+        if answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0 and dist[i] != 2:
+            dist[i] = 1
+            answerFreq[guess[i]] -= 1
+        return dist
+def displayGuess(answer, guess):
+    infoDist = getInfoDistribution(answer, guess)
+    for i in range(0, len(answer)):
+        if infoDist[i] == 2:
+            printc("\u001b[32m", guess[i], endline=" ")
+        elif infoDist[i] == 1:
+            printc("\u001b[33m", guess[i], endline=" ")
+        else:
+            printc("", guess[i], endline=" ")
+    print("\n")
+def bestGuess(answer, guesses):
+    confirmDist = defaultdict(lambda: 0)
+    possibleDist = defaultdict(lambda: 0)
+    impossibleDist = []
+
+    for guess in guesses:
+        infoDist = getInfoDistribution(answer, guess)
+        for i in range(0,len(infoDist)):
+            if infoDist[i] == 2:
+                confirmDist.append(guess[i])
+            elif infoDist[i] == 1:
+            
+            else:
+
     pass
 def play():
-    def getInfoDistribution(answer, guess):
-        dist = [0] * len(answer)
-        answerFreq = defaultdict(lambda: 0, { i : answer.count(i) for i in answer })
-        guessFreq = defaultdict(lambda: 0, { i : guess.count(i) for i in guess })
-        for i in range(0, len(answer)):
-            if guess[i] == answer[i]:
-                answerFreq[guess[i]] -= 1
-                guessFreq[guess[i]] -= 1
-                dist[i] = 2
-        for i in range(0, len(answer)):
-            if answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0:
-                dist[i] = 1
-                answerFreq[guess[i]] -= 1
-    def displayGuess(answer, guess):
-        infoDist = getInfoDistribution(answer, guess)
-        for i in range(0, len(answer)):
-            if infoDist[i] == 2:
-                printc("\u001b[32m", guess[i], endline=" ")
-            elif infoDist[i] == 1:
-                printc("\u001b[33m", guess[i], endline=" ")
-            else:
-                printc("", guess[i], endline=" ")
-        print("\n")
 
     
-    answer = "slush"#solutions[random.randrange(len(solutions))]
+    answer = "hello" #solutions[random.randrange(len(solutions))]
     guessCount = 0
     madeGuesses = []
 
@@ -51,7 +65,7 @@ def play():
 
     while (True):
         clear()
-        printc("\u001b[31m", answer)
+        # printc("\u001b[31m", answer)
         for i in range(0, guessCount):
             print(f"{i+1}. ", end="")
             displayGuess(answer, madeGuesses[i])
