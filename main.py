@@ -1,12 +1,12 @@
 import os
 import random
+from site import getusersitepackages
 import colorama
 from collections import defaultdict
 
 
 guesses = open("valid_guesses.csv", "r").read().split("\n")
 solutions = open("valid_solutions.csv", "r").read().split("\n")
-
 
 def printc(colorCode="", text="", endline="\n"):
     print(colorCode + text + "\u001b[0m", end=endline)
@@ -19,16 +19,19 @@ def getInfoDistribution(answer, guess):
     dist = [0] * len(answer)
     answerFreq = defaultdict(lambda: 0, { i : answer.count(i) for i in answer })
     guessFreq = defaultdict(lambda: 0, { i : guess.count(i) for i in guess })
+      
     for i in range(0, len(answer)):
         if guess[i] == answer[i]:
-            answerFreq[guess[i]] -= 1
             guessFreq[guess[i]] -= 1
+            answerFreq[guess[i]] -= 1
             dist[i] = 2
     for i in range(0, len(answer)):
-        if answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0 and dist[i] != 2:
-            dist[i] = 1
+        if dist[i] != 2 and answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0:
+            guessFreq[guess[i]] -= 1
             answerFreq[guess[i]] -= 1
-        return dist
+            dist[i] = 1
+    return dist
+
 def displayGuess(answer, guess):
     infoDist = getInfoDistribution(answer, guess)
     for i in range(0, len(answer)):
@@ -39,25 +42,9 @@ def displayGuess(answer, guess):
         else:
             printc("", guess[i], endline=" ")
     print("\n")
-def bestGuess(answer, guesses):
-    confirmDist = defaultdict(lambda: 0)
-    possibleDist = defaultdict(lambda: 0)
-    impossibleDist = []
 
-    for guess in guesses:
-        infoDist = getInfoDistribution(answer, guess)
-        for i in range(0,len(infoDist)):
-            if infoDist[i] == 2:
-                confirmDist.append(guess[i])
-            elif infoDist[i] == 1:
-            
-            else:
-
-    pass
 def play():
-
-    
-    answer = "hello" #solutions[random.randrange(len(solutions))]
+    answer = solutions[random.randrange(len(solutions))]
     guessCount = 0
     madeGuesses = []
 
