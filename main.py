@@ -1,36 +1,45 @@
 import os
 import random
-from site import getusersitepackages
-import colorama
+import colorama # https://pypi.org/project/colorama/
 from collections import defaultdict
 
-
+# https://www.kaggle.com/datasets/bcruise/wordle-valid-words?resource=download
 guesses = open("valid_guesses.csv", "r").read().split("\n")
+
+# https://www.kaggle.com/datasets/bcruise/wordle-valid-words?resource=download
 solutions = open("valid_solutions.csv", "r").read().split("\n")
 
-def printc(colorCode="", text="", endline="\n"):
+def printc(colorCode="", text="", endline="\n"): # For colored output
     print(colorCode + text + "\u001b[0m", end=endline)
 
-def clear():
-    if os.name == "nt": os.system('cls')
-    else: os.system('clear')
+
+def clear(): # Clear depending on OS (UNIX Based/Windows)
+    if os.name == "nt":
+        os.system('cls')
+    else:
+        os.system('clear')
+
 
 def getInfoDistribution(answer, guess):
-    dist = [0] * len(answer)
-    answerFreq = defaultdict(lambda: 0, { i : answer.count(i) for i in answer })
-    guessFreq = defaultdict(lambda: 0, { i : guess.count(i) for i in guess })
-      
-    for i in range(0, len(answer)):
-        if guess[i] == answer[i]:
-            guessFreq[guess[i]] -= 1
-            answerFreq[guess[i]] -= 1
-            dist[i] = 2
-    for i in range(0, len(answer)):
-        if dist[i] != 2 and answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0:
-            guessFreq[guess[i]] -= 1
-            answerFreq[guess[i]] -= 1
-            dist[i] = 1
-    return dist
+    answerFreq = defaultdict(lambda: 0, {i: answer.count(i) for i in answer})
+    guessFreq = defaultdict(lambda: 0, {i: guess.count(i) for i in guess})
+
+    if (answer == guess):
+        return [2] * 5 
+    else:
+        dist = [0] * len(answer)
+        for i in range(0, len(answer)):
+            if guess[i] == answer[i]:
+                guessFreq[guess[i]] -= 1
+                answerFreq[guess[i]] -= 1
+                dist[i] = 2
+        for i in range(0, len(answer)):
+            if dist[i] != 2 and answerFreq[guess[i]] != 0 and guessFreq[guess[i]] != 0:
+                guessFreq[guess[i]] -= 1
+                answerFreq[guess[i]] -= 1
+                dist[i] = 1
+        return dist
+
 
 def displayGuess(answer, guess):
     infoDist = getInfoDistribution(answer, guess)
@@ -43,6 +52,7 @@ def displayGuess(answer, guess):
             printc("", guess[i], endline=" ")
     print("\n")
 
+
 def play():
     answer = solutions[random.randrange(len(solutions))]
     guessCount = 0
@@ -52,7 +62,6 @@ def play():
 
     while (True):
         clear()
-        # printc("\u001b[31m", answer)
         for i in range(0, guessCount):
             print(f"{i+1}. ", end="")
             displayGuess(answer, madeGuesses[i])
@@ -66,37 +75,29 @@ def play():
             input(f"the correct answer was: '{answer}', press Enter to continue...")
             return
         else:
-            guess = input("Enter a guess, enter in 'bot' to find the next best word, or enter 'q' to quit: ").lower()
-            if guess == "bot":
-                guessCount += 1
-                madeGuesses.append(bestGuess(answer, guess, getInfoDistribution(answer, guess)))
-            elif guess == "q":
+            guess = input("Enter a guess, or enter 'q' to quit: ").lower()
+            if guess == "q":
                 return
-            elif len(guess) != 5: 
+            elif len(guess) != 5:
                 input("Guess must be a 5 letter word, press Enter to continue...")
             elif guess not in guesses and guess not in solutions:
                 input("Guess is not a valid word, press Enter to continue...")
             else:
                 guessCount += 1
                 madeGuesses.append(guess)
-            
 
 
 clear()
-colorama.init()
+colorama.init() # Colors!
 
 run = True
 
 while (run):
     option = ""
     clear()
-    printc("\u001b[33m", "Wordle Sight")
-    print("1. Play Wordle!")
-    print("2. Run Bot")
-    option = input("Choose an option: ")
-    if (option == "1"):
-        play()
-    elif (option == "2"):
-        pass
+    printc("\u001b[33m", "Guess the Word!")
+    option = input("Press 'Enter' to play Guess the Word or enter 'q' to quit! ")
+    if (option.lower() == "q") :
+        run = False
     else:
-        input("That is not a valid option, press Enter to continue...")
+        play()
